@@ -1,0 +1,11 @@
+{
+  "name": "mac-deepclean",
+  "owner": { "name": "Kaan Koc" },
+  "plugins": [
+    {
+      "name": "mac-deepclean",
+      "source": "./",
+      "description": "AI-native Mac disk cleanup for Claude Code. /deepclean scans, explains, and cleans with judgment."
+    }
+  ]
+}

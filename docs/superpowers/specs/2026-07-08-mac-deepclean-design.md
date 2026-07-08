@@ -52,7 +52,7 @@ mac-deepclean/
 Install UX:
 ```
 /plugin marketplace add khankoc/mac-deepclean
-/plugin install deepclean
+/plugin install mac-deepclean
 /deepclean
 ```
 
