@@ -8,12 +8,14 @@ anything — it is the approved design and carries the full project context.**
 
 ## Project state
 - [x] Brainstorm + design (spec above; sections approved by user 2026-07-08)
-- [ ] User final review of spec
-- [ ] Implementation plan (superpowers:writing-plans)
-- [ ] scan.sh + tests
-- [ ] SKILL.md + references (knowledge-base.md, safety-rules.md)
-- [ ] commands/deepclean.md, plugin.json, marketplace.json
-- [ ] README showcase + publish to GitHub (repo: khankoc/mac-deepclean)
+- [x] User final review of spec
+- [x] Implementation plan (docs/superpowers/plans/2026-07-08-mac-deepclean-v1.md)
+- [x] scan.sh + tests
+- [x] SKILL.md + references (knowledge-base.md, safety-rules.md)
+- [x] commands/deepclean.md, plugin.json, marketplace.json
+- [x] README showcase + publish to GitHub (repo: khankoc/mac-deepclean)
+- [x] v0.1.0 released (2026-07-09; final whole-branch review: READY FOR RELEASE)
+- [ ] Real-session install dry-run: `/plugin marketplace add khankoc/mac-deepclean`, `/plugin install mac-deepclean`, `/deepclean report`
 
 ## Non-negotiables
 - Safety rules in the spec are the product's core. Never weaken them for convenience.
