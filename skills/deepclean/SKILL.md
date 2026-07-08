@@ -48,8 +48,10 @@ The 🔴 section is mandatory — showing what you WON'T touch builds trust.
 
 ## Phase 3 — Consented cleanup
 
-1. 🟢 items: ask once ("Clean all safe items — {X} GB?"). On yes, delete with
-   plain `rm -rf` per item; verify each parent still exists afterward.
+1. 🟢 items: ask once ("Clean all safe items — {X} GB?"). On yes, before the bulk
+   pass, split out any root-owned/sudo-required paths and route them to step 3
+   instead — never let them fail silently inside the bulk delete. Delete remaining
+   items with plain `rm -rf` per item; verify each parent still exists afterward.
 2. 🟡 items: one AskUserQuestion each (or grouped multiSelect when homogeneous),
    stating the size and the exact cost of deletion.
 3. sudo-needed paths: print a single ready command for the user; never run it.
