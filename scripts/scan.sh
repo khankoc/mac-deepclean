@@ -25,6 +25,56 @@ size_kb() { du -sk "$1" 2>/dev/null | awk '{print $1}'; }
 
 mtime_iso() { stat -f '%Sm' -t '%Y-%m-%d' "$1" 2>/dev/null || echo "unknown"; }
 
+git_context() { # $1=dir that is (or is inside) a git repo → prints json fields or nothing
+  local d="$1"
+  while [ "$d" != "/" ] && [ ! -d "$d/.git" ]; do d=$(dirname "$d"); done
+  [ -d "$d/.git" ] || return 0
+  local dirty remote synced counts
+  dirty=$(git -C "$d" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+  remote=$(git -C "$d" remote 2>/dev/null | head -1)
+  if [ -n "$remote" ]; then
+    counts=$(git -C "$d" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null | tr -s ' \t' ' ')
+    if [ "$counts" = "0 0" ] && [ "$dirty" = "0" ]; then synced=true; else synced=false; fi
+    printf ',"git":{"has_remote":true,"dirty_files":%s,"synced_with_remote":%s}' "$dirty" "$synced"
+  else
+    printf ',"git":{"has_remote":false,"dirty_files":%s,"synced_with_remote":false}' "$dirty"
+  fi
+}
+
+cli_context() { # $1=hidden dir like /home/.pnpm → prints ,"cli_installed":bool
+  local name
+  name=$(basename "$1")
+  name="${name#.}"
+  if command -v "$name" >/dev/null 2>&1; then
+    printf ',"cli_installed":true'
+  else
+    printf ',"cli_installed":false'
+  fi
+}
+
+scan_artifacts() {
+  local roots="${DEEPCLEAN_CODE_DIRS:-$HOME_DIR/Documents:$HOME_DIR/Desktop:$HOME_DIR/Developer:$HOME_DIR/Projects}"
+  local root d kb extra
+  OLDIFS=$IFS; IFS=':'
+  for root in $roots; do
+    IFS=$OLDIFS
+    [ -d "$root" ] || { IFS=':'; continue; }
+    while IFS= read -r d; do
+      [ -n "$d" ] || continue
+      kb=$(size_kb "$d")
+      [ -n "$kb" ] || continue
+      [ "$kb" -ge "$MIN_KB" ] || continue
+      extra=",\"last_modified\":\"$(mtime_iso "$d")\"$(git_context "$d")"
+      emit "$d" "$kb" "project_artifact" "$extra"
+    done < <(find "$root" -maxdepth 6 -type d \
+      \( -name node_modules -o -name .next -o -name dist -o -name build \
+         -o -name .dart_tool -o -name venv -o -name .venv -o -name target -o -name out \) \
+      -prune 2>/dev/null)
+    IFS=':'
+  done
+  IFS=$OLDIFS
+}
+
 scan_children() { # $1=root dir, $2=category label
   local root="$1" cat="$2" child kb extra
   [ -d "$root" ] || return 0
@@ -34,6 +84,12 @@ scan_children() { # $1=root dir, $2=category label
     [ -n "$kb" ] || continue
     [ "$kb" -ge "$MIN_KB" ] || continue
     extra=",\"last_modified\":\"$(mtime_iso "$child")\""
+    case "$child" in
+      "$HOME_DIR"/.*) extra="$extra$(cli_context "$child")" ;;
+    esac
+    case "$cat" in
+      home|discovered) extra="$extra$(git_context "$child")" ;;
+    esac
     emit "$child" "$kb" "$cat" "$extra"
   done
 }
@@ -60,6 +116,7 @@ else
   scan_children "/Library/Caches" "system_cache"
   scan_children "/Applications" "application"
   scan_children "/private/var/folders" "system_temp"
+  scan_artifacts
 fi
 
 printf '\n ]\n}\n'
