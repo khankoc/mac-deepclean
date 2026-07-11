@@ -53,7 +53,7 @@ cli_context() { # $1=hidden dir like /home/.pnpm → prints ,"cli_installed":boo
 }
 
 scan_artifacts() {
-  local roots="${DEEPCLEAN_CODE_DIRS:-$HOME_DIR/Documents:$HOME_DIR/Desktop:$HOME_DIR/Developer:$HOME_DIR/Projects}"
+  local roots="${DEEPCLEAN_CODE_DIRS:-$HOME_DIR/Documents:$HOME_DIR/Desktop:$HOME_DIR/Developer:$HOME_DIR/Projects:$HOME_DIR/code:$HOME_DIR/dev:$HOME_DIR/src:$HOME_DIR/workspace:$HOME_DIR/GitHub:$HOME_DIR/repos}"
   local root d kb extra
   OLDIFS=$IFS; IFS=':'
   for root in $roots; do
@@ -81,7 +81,14 @@ scan_children() { # $1=root dir, $2=category label
   for child in "$root"/* "$root"/.[!.]*; do
     [ -e "$child" ] || continue
     kb=$(size_kb "$child")
-    [ -n "$kb" ] || continue
+    if [ -z "$kb" ]; then
+      # du failed — most often a root-owned/unreadable dir. Report it instead
+      # of dropping it silently, so Claude can flag it as "needs sudo".
+      if [ -d "$child" ] && [ ! -r "$child" ]; then
+        emit "$child" 0 "$cat" ',"unreadable":true'
+      fi
+      continue
+    fi
     [ "$kb" -ge "$MIN_KB" ] || continue
     extra=",\"last_modified\":\"$(mtime_iso "$child")\""
     case "$child" in
@@ -112,6 +119,7 @@ else
   scan_children "$HOME_DIR/Library/Group Containers" "container"
   scan_children "$HOME_DIR/Library/Developer" "developer"
   scan_children "$HOME_DIR/Library/Logs" "logs"
+  scan_children "$HOME_DIR/Downloads" "downloads"
   scan_children "/Library/Developer" "developer_system"
   scan_children "/Library/Caches" "system_cache"
   scan_children "/Applications" "application"

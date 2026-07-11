@@ -1,6 +1,6 @@
 {
   "name": "mac-deepclean",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI-native Mac disk cleanup. Finds what's big, explains it, classifies safe/ask/untouchable, and cleans with your consent — it checks whether your repo is pushed before it would ever touch it.",
   "author": { "name": "Kaan Koc" },
   "homepage": "https://github.com/khankoc/mac-deepclean",

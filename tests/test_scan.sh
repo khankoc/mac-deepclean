@@ -37,5 +37,18 @@ if [ "$SIZE" -lt 2000 ]; then
   fail "bigdir size_kb=$SIZE, expected >= 2000"
 fi
 
+# 5. Unreadable dirs are reported with unreadable:true, not dropped
+mkdir -p "$TMP/locked"
+echo x > "$TMP/locked/f"
+chmod 000 "$TMP/locked"
+OUT2=$(DEEPCLEAN_MIN_MB=1 DEEPCLEAN_ROOTS="$TMP" /bin/bash scripts/scan.sh)
+chmod 755 "$TMP/locked"   # so the EXIT trap can clean up
+if ! printf '%s' "$OUT2" | python3 -m json.tool >/dev/null 2>&1; then
+  fail "output with unreadable dir is not valid JSON"
+fi
+if ! printf '%s' "$OUT2" | grep -q '"path":".*locked","size_kb":0,"category":"discovered","unreadable":true'; then
+  fail "unreadable dir not reported with unreadable:true"
+fi
+
 [ "$FAILED" -eq 0 ] && echo "PASS: scanner core"
 exit "$FAILED"

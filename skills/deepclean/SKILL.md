@@ -33,6 +33,9 @@ For each significant item:
    Still unknown → 🔴 with "unknown — investigate manually".
 3. Apply context overrides (always toward stricter): git dirty/unpushed → 🔴;
    `cli_installed:false` verified → orphan 🟢; recently used 🟡 stays 🟡.
+4. Items with `"unreadable":true` are root-owned dirs the scanner could not
+   size. If the knowledge base marks them cleanable, list them in the report's
+   sudo hand-off section with size "unknown (root-owned)"; otherwise 🔴.
 
 Then present ONE report (before any deletion):
 

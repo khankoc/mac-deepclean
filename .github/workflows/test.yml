@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scanner core tests
+        run: bash tests/test_scan.sh
+      - name: Scanner context tests
+        run: bash tests/test_scan_context.sh
+      - name: Scanner is read-only (no mutating commands)
+        run: |
+          ! grep -nE '(^|[^a-zA-Z_-])(rm|mv|unlink|truncate|tee|chmod|chown|mkdir|touch)([^a-zA-Z_-]|$)' scripts/scan.sh
+      - name: Manifests are valid JSON
+        run: |
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
