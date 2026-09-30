@@ -16,7 +16,7 @@ anything — it is the approved design and carries the full project context.**
 - [x] README showcase + publish to GitHub (repo: khankoc/mac-deepclean)
 - [x] v0.1.0 released (2026-07-09; final whole-branch review: READY FOR RELEASE)
 - [x] v0.1.2 (2026-09-30): real-Mac scan test → TCC fix, git ahead/behind, community files
-- [ ] Real-session install dry-run: `/plugin marketplace add khankoc/mac-deepclean`, `/plugin install mac-deepclean`, `/deepclean report`
+- [x] Real install dry-run (2026-09-30): marketplace add + install from GitHub OK; `/deepclean report` e2e on author's Mac OK
 
 ## Non-negotiables
 - Safety rules in the spec are the product's core. Never weaken them for convenience.
