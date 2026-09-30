@@ -1,0 +1,33 @@
+name: Teach it a folder
+description: A big folder /deepclean didn't recognize or misclassified
+labels: [knowledge-base]
+body:
+  - type: input
+    id: path
+    attributes:
+      label: Path or pattern
+      placeholder: "~/Library/Application Support/SomeApp/Cache"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is it?
+      description: Which app creates it, and what happens if it's deleted?
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Suggested tier
+      options:
+        - 🟢 safe — regenerates at no cost
+        - 🟡 ask — regenerable but costly, or depends on usage
+        - 🔴 protect — user data / irreplaceable
+    validations:
+      required: true
+  - type: input
+    id: size
+    attributes:
+      label: Typical size
+      placeholder: "e.g. 3 GB"

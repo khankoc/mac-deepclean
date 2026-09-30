@@ -1,0 +1,30 @@
+name: Bug report
+description: Something went wrong during a scan or cleanup
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "If this could cause **data loss**, please use [private reporting](https://github.com/khankoc/mac-deepclean/security/advisories/new) instead."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did /deepclean do, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: scan
+    attributes:
+      label: Relevant scanner output (optional)
+      description: "Run `bash scripts/scan.sh` and paste the relevant items. Redact paths you don't want public."
+      render: json
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "e.g. 26.0"
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      placeholder: "e.g. 0.1.2"

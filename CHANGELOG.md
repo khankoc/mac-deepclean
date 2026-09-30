@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.1.2 — 2026-09-30
+
+Found by running the plugin on a real, 94%-full Mac.
+
+- Scanner: folders hidden by macOS privacy protection (TCC / Full Disk
+  Access) are no longer mislabeled as root-owned "needs sudo". They're
+  counted in a new top-level `tcc_protected_count` (163 on the test Mac —
+  previously 163 noise rows); only home-level ones like `~/.Trash` are
+  listed, with `"tcc_protected":true`.
+- Scanner: genuinely unreadable folders now carry their `owner`.
+- Scanner: git context adds `has_upstream`, `ahead`, `behind`, so the report
+  can say "12 unpushed commits" instead of just "not synced".
+- Skill: rules for TCC-protected folders (explain Full Disk Access, never
+  bypass) and for ahead/no-upstream repos.
+- Knowledge base: Claude desktop VM bundles, local LLM models (Ollama, Jan,
+  Hugging Face, LM Studio), pnpm/Electron caches, Trash, Steam, Minecraft.
+- Repo: CONTRIBUTING, SECURITY policy, issue/PR templates, marketplace
+  description, star/release badges.
+
 ## v0.1.1 — 2026-07-12
 
 - Scanner: unreadable (root-owned) directories are now reported with

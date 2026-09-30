@@ -15,6 +15,7 @@ anything — it is the approved design and carries the full project context.**
 - [x] commands/deepclean.md, plugin.json, marketplace.json
 - [x] README showcase + publish to GitHub (repo: khankoc/mac-deepclean)
 - [x] v0.1.0 released (2026-07-09; final whole-branch review: READY FOR RELEASE)
+- [x] v0.1.2 (2026-09-30): real-Mac scan test → TCC fix, git ahead/behind, community files
 - [ ] Real-session install dry-run: `/plugin marketplace add khankoc/mac-deepclean`, `/plugin install mac-deepclean`, `/deepclean report`
 
 ## Non-negotiables

@@ -50,5 +50,13 @@ if ! printf '%s' "$OUT2" | grep -q '"path":".*locked","size_kb":0,"category":"di
   fail "unreadable dir not reported with unreadable:true"
 fi
 
+# 6. Unreadable dir carries its owner, and top-level tcc_protected_count exists
+if ! printf '%s' "$OUT2" | grep -q '"unreadable":true,"owner":"'"$(id -un)"'"'; then
+  fail "unreadable dir missing owner field"
+fi
+if ! printf '%s' "$OUT2" | python3 -c "import json,sys; d=json.load(sys.stdin); assert isinstance(d['tcc_protected_count'], int)" 2>/dev/null; then
+  fail "tcc_protected_count missing or not an int"
+fi
+
 [ "$FAILED" -eq 0 ] && echo "PASS: scanner core"
 exit "$FAILED"

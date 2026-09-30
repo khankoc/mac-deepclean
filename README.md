@@ -6,6 +6,9 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
 ![no dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
+[![GitHub stars](https://img.shields.io/github/stars/khankoc/mac-deepclean?style=social)](https://github.com/khankoc/mac-deepclean/stargazers)
+[![latest release](https://img.shields.io/github/v/release/khankoc/mac-deepclean)](https://github.com/khankoc/mac-deepclean/releases)
+[![last commit](https://img.shields.io/github/last-commit/khankoc/mac-deepclean)](https://github.com/khankoc/mac-deepclean/commits/main)
 
 > CleanMyMac deletes from a list. This one checks if your repo is pushed first.
 
@@ -108,6 +111,17 @@ Yes — it also knows Final Cut render files, Logic sound libraries, Telegram
 media caches, old iPhone backups, orphaned app data. The developer stuff is
 just where it goes deepest.
 
+**Does my data leave my Mac?**
+The scanner runs locally and only reports folder paths, sizes and dates. Those
+results are read by Claude inside your Claude Code session, like any other
+command output — file *contents* are never read or sent by the scanner.
+
+**It says some folders "couldn't be measured"?**
+macOS privacy protection hides some folders (Mail, Messages, the Trash…) from
+your terminal. `sudo` doesn't help and the plugin never tries to bypass it.
+If you want a complete picture, grant your terminal Full Disk Access in
+System Settings → Privacy & Security and rerun.
+
 **Why is my "System Data" huge?**
 Usually developer tooling (simulators, SDKs, container VMs). Run
 `/deepclean report` and it will show you exactly what's inside — explained.
@@ -116,6 +130,18 @@ Usually developer tooling (simulators, SDKs, container VMs). Run
 
 macOS, Claude Code with plugin support. No dependencies — the scanner is
 plain bash (3.2-compatible, ships with every Mac).
+
+## Contributing
+
+The easiest way to help: **teach it a folder** it didn't recognize —
+[open a knowledge-base issue](https://github.com/khankoc/mac-deepclean/issues/new?template=knowledge-base.yml)
+or add a row to `skills/deepclean/references/knowledge-base.md`.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Found something that could delete data
+it shouldn't? Please report it [privately](SECURITY.md).
+
+## Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=khankoc/mac-deepclean&type=Date)](https://star-history.com/#khankoc/mac-deepclean&Date)
 
 ## License
 

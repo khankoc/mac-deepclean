@@ -1,11 +1,19 @@
 {
   "name": "mac-deepclean",
-  "owner": { "name": "Kaan Koc" },
+  "owner": {
+    "name": "Kaan Koc"
+  },
+  "metadata": {
+    "description": "AI-native Mac disk cleanup for Claude Code — scans, explains, and cleans with judgment."
+  },
   "plugins": [
     {
       "name": "mac-deepclean",
       "source": "./",
-      "description": "AI-native Mac disk cleanup for Claude Code. /deepclean scans, explains, and cleans with judgment."
+      "description": "AI-native Mac disk cleanup for Claude Code. /deepclean scans, explains, and cleans with judgment.",
+      "version": "0.1.2",
+      "category": "productivity",
+      "homepage": "https://github.com/khankoc/mac-deepclean"
     }
   ]
 }

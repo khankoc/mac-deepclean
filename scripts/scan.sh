@@ -14,6 +14,8 @@ json_escape() {
 }
 
 FIRST=1
+TCC_COUNT=0
+ME=$(id -un)
 emit() { # $1=path $2=size_kb $3=category $4=extra json fields (each starting with a comma) or ""
   local p
   p=$(json_escape "$1")
@@ -29,13 +31,19 @@ git_context() { # $1=dir that is (or is inside) a git repo → prints json field
   local d="$1"
   while [ "$d" != "/" ] && [ ! -d "$d/.git" ]; do d=$(dirname "$d"); done
   [ -d "$d/.git" ] || return 0
-  local dirty remote synced counts
+  local dirty remote synced counts behind ahead
   dirty=$(git -C "$d" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
   remote=$(git -C "$d" remote 2>/dev/null | head -1)
   if [ -n "$remote" ]; then
     counts=$(git -C "$d" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null | tr -s ' \t' ' ')
+    if [ -z "$counts" ]; then
+      # No upstream tracking branch: push state is unknown, never "synced".
+      printf ',"git":{"has_remote":true,"has_upstream":false,"dirty_files":%s,"synced_with_remote":false}' "$dirty"
+      return 0
+    fi
+    behind=${counts%% *}; ahead=${counts##* }
     if [ "$counts" = "0 0" ] && [ "$dirty" = "0" ]; then synced=true; else synced=false; fi
-    printf ',"git":{"has_remote":true,"dirty_files":%s,"synced_with_remote":%s}' "$dirty" "$synced"
+    printf ',"git":{"has_remote":true,"has_upstream":true,"ahead":%s,"behind":%s,"dirty_files":%s,"synced_with_remote":%s}' "$ahead" "$behind" "$dirty" "$synced"
   else
     printf ',"git":{"has_remote":false,"dirty_files":%s,"synced_with_remote":false}' "$dirty"
   fi
@@ -76,16 +84,27 @@ scan_artifacts() {
 }
 
 scan_children() { # $1=root dir, $2=category label
-  local root="$1" cat="$2" child kb extra
+  local root="$1" cat="$2" child kb extra owner perms
   [ -d "$root" ] || return 0
   for child in "$root"/* "$root"/.[!.]*; do
     [ -e "$child" ] || continue
     kb=$(size_kb "$child")
     if [ -z "$kb" ]; then
-      # du failed — most often a root-owned/unreadable dir. Report it instead
-      # of dropping it silently, so Claude can flag it as "needs sudo".
+      # du failed. Two very different causes:
+      #  - macOS privacy (TCC): we own it and have the r bit, but the OS denies
+      #    access because the terminal lacks Full Disk Access. sudo won't help.
+      #    Apple containers produce dozens of these, so they're only counted —
+      #    except direct children of home (e.g. ~/.Trash), which matter.
+      #  - plain permissions (e.g. root-owned): report with owner for sudo hand-off.
       if [ -d "$child" ] && [ ! -r "$child" ]; then
-        emit "$child" 0 "$cat" ',"unreadable":true'
+        owner=$(stat -f '%Su' "$child" 2>/dev/null)
+        perms=$(stat -f '%Sp' "$child" 2>/dev/null)
+        if [ "$owner" = "$ME" ] && [ "${perms:1:1}" = "r" ]; then
+          TCC_COUNT=$((TCC_COUNT + 1))
+          [ "$cat" = "home" ] && emit "$child" 0 "$cat" ',"tcc_protected":true'
+        else
+          emit "$child" 0 "$cat" ",\"unreadable\":true,\"owner\":\"$(json_escape "$owner")\""
+        fi
       fi
       continue
     fi
@@ -127,4 +146,4 @@ else
   scan_artifacts
 fi
 
-printf '\n ]\n}\n'
+printf '\n ],\n "tcc_protected_count":%s\n}\n' "$TCC_COUNT"

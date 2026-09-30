@@ -32,6 +32,10 @@ Sizes marked "regen" mean: deleting costs only a re-download/rebuild.
 | `~/Library/Caches/ms-playwright*` | Playwright browser binaries | 🟢 |
 | `*.xcarchive`, `~/Library/Developer/Xcode/Archives` | app archives — may hold unreleased builds | 🟡 |
 | `~/Library/Developer/Xcode/iOS DeviceSupport` | per-iOS-version debug symbols; regen on device connect | 🟢 |
+| `~/Library/Caches/pnpm`, `~/Library/pnpm/store` | pnpm content-addressed store; `pnpm store prune` or delete | 🟢 |
+| `~/Library/Caches/electron`, `electron-builder` | Electron/electron-builder download caches | 🟢 |
+| `~/Library/Application Support/Claude/vm_bundles` | Claude desktop's sandbox VM image (~10 GB); re-downloaded when needed | 🟡 (quit Claude first; costs a large re-download) |
+| `~/.ollama/models`, `~/.cache/huggingface`, `~/.cache/lm-studio`, `~/Library/Application Support/Jan` | local LLM model weights; multi-GB re-downloads | 🟡 (ask which models are still used) |
 
 ## Video / Photo
 
@@ -66,6 +70,9 @@ Sizes marked "regen" mean: deleting costs only a re-download/rebuild.
 | `*.ShipIt`, `*-updater` caches | app auto-update leftovers | 🟢 |
 | `~/Downloads` old `.dmg`/`.zip` installers | installers already installed | 🟡 (list, let user pick) |
 | `/private/var/folders` | macOS-managed temp; do NOT rm blindly | 🔴 (reboot shrinks it) |
+| `~/.Trash` | the Trash; often `tcc_protected` (unsizable without Full Disk Access) | 🟡 — suggest Finder → Empty Trash; never `rm` it |
+| `~/Library/Application Support/Steam` (`steamapps`) | installed games; re-downloadable but large | 🟡 |
+| `~/Library/Application Support/minecraft` (`saves/`) | game worlds — irreplaceable; the rest (versions, assets) regen | `saves` 🔴, rest 🟡 |
 
 ## Orphan pattern (any category)
 

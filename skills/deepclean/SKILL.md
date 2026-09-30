@@ -33,9 +33,20 @@ For each significant item:
    Still unknown → 🔴 with "unknown — investigate manually".
 3. Apply context overrides (always toward stricter): git dirty/unpushed → 🔴;
    `cli_installed:false` verified → orphan 🟢; recently used 🟡 stays 🟡.
-4. Items with `"unreadable":true` are root-owned dirs the scanner could not
-   size. If the knowledge base marks them cleanable, list them in the report's
-   sudo hand-off section with size "unknown (root-owned)"; otherwise 🔴.
+4. Items with `"unreadable":true` carry an `owner` (often root or a system
+   daemon) and could not be sized. If the knowledge base marks them cleanable,
+   list them in the report's sudo hand-off section with size "unknown
+   (owned by {owner})"; otherwise 🔴.
+5. `"tcc_protected":true` items and the top-level `tcc_protected_count` are
+   folders macOS privacy protection (TCC) hid from the terminal — sudo does
+   NOT help. Never try to work around it. If the count is large or `~/.Trash`
+   is protected, add one line to the report: "N folders couldn't be measured
+   because your terminal lacks Full Disk Access (System Settings → Privacy &
+   Security → Full Disk Access). Optional — grant it and rerun for a complete
+   picture." Suggest emptying the Trash via Finder.
+6. Git context: `ahead`>0 means unpushed commits; `has_upstream:false` means
+   push state is unknown. Both count as NOT synced — say which one in the report
+   ("12 unpushed commits", "branch has no upstream").
 
 Then present ONE report (before any deletion):
 

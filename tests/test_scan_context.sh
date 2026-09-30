@@ -43,5 +43,25 @@ print('ok' if (a and a[0].get('cli_installed') is False) else 'bad')
 ")
 [ "$CHECK2" = "ok" ] || fail "orphan cli_installed flag wrong: $CHECK2"
 
+# Fixture 3: repo with an upstream, 2 local commits not pushed → ahead:2
+git init -q --bare "$TMP/remote.git"
+git clone -q "$TMP/remote.git" "$TMP/code/pushed" 2>/dev/null
+( cd "$TMP/code/pushed" && git -c user.name=t -c user.email=t@t commit -q --allow-empty -m a \
+  && git push -q origin HEAD 2>/dev/null \
+  && git -c user.name=t -c user.email=t@t commit -q --allow-empty -m b \
+  && git -c user.name=t -c user.email=t@t commit -q --allow-empty -m c )
+mkdir -p "$TMP/code/pushed/build"
+dd if=/dev/zero of="$TMP/code/pushed/build/blob" bs=1024 count=2048 2>/dev/null
+OUT3=$(DEEPCLEAN_MIN_MB=1 DEEPCLEAN_HOME="$TMP/fakehome" \
+      DEEPCLEAN_CODE_DIRS="$TMP/code" /bin/bash scripts/scan.sh)
+CHECK3=$(printf '%s' "$OUT3" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+a=[i for i in d['items'] if i['path'].endswith('pushed/build')]
+g=a[0].get('git',{}) if a else {}
+print('ok' if (g.get('has_upstream') is True and g.get('ahead')==2 and g.get('behind')==0 and g.get('synced_with_remote') is False) else 'bad:'+json.dumps(g))
+")
+[ "$CHECK3" = "ok" ] || fail "ahead/behind git context wrong: $CHECK3"
+
 [ "$FAILED" -eq 0 ] && echo "PASS: scanner context"
 exit "$FAILED"
